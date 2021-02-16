@@ -131,6 +131,16 @@ int memcmp( const void* aptr, const void* bptr, size_t n )
 	return 0;
 }
 
+typedef struct
+{
+	Framebuffer* framebuffer;
+	PSF1_FONT* PSF1_Font;
+	EFI_MEMORY_DESCRIPTOR* m_Map;
+	UINTN m_MapSize;
+	UINTN m_MapDescSize;
+
+} BootInfo;
+
 EFI_STATUS efi_main( EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable )
 {
 	InitializeLib( ImageHandle, SystemTable );
@@ -206,8 +216,7 @@ EFI_STATUS efi_main( EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable )
 
 	Print( L"Kernel Loaded \n\r" );
 
-	void ( *KrnlStart )(Framebuffer*, PSF1_FONT* ) = ( ( __attribute__( ( sysv_abi ) ) void ( * )( Framebuffer*, PSF1_FONT* ) ) header.e_entry );
-
+	
 	PSF1_FONT* zapFont = LoadPSF1Font( NULL, L"zap-light16.psf", ImageHandle, SystemTable );
 	if (zapFont == NULL)
 	{
@@ -222,7 +231,28 @@ EFI_STATUS efi_main( EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable )
 
 	Print( L"Base: 0x%x\n\r Size: 0x%x\n\r Width: %d\n\r Height: %d\n\r PixelPerScanline: %d\n\r", buffer->BassAddress, buffer->BassAddress, buffer->Width, buffer->Height, buffer->PixelPerScanline );
 
-	KrnlStart(buffer, zapFont);
+	EFI_MEMORY_DESCRIPTOR* Map = NULL;
+	UINTN MapSize, MapKey;
+	UINTN DescSize;
+	UINT32 DescVer;
+	{
+		SystemTable->BootServices->GetMemoryMap( &MapSize, Map, &MapKey, &DescSize, &DescVer );
+		SystemTable->BootServices->AllocatePool( EfiLoaderData, MapSize, ( void** )&Map );
+		SystemTable->BootServices->GetMemoryMap( &MapSize, Map, &MapKey, &DescSize, &DescVer );
+	}
+
+	void ( *KrnlStart )( BootInfo* ) = ( ( __attribute__( ( sysv_abi ) ) void ( * )( BootInfo* ) ) header.e_entry );
+
+	BootInfo bootInfo;
+	bootInfo.framebuffer = buffer;
+	bootInfo.PSF1_Font = zapFont;
+	bootInfo.m_MapSize = MapSize;
+	bootInfo.m_MapDescSize = DescSize;
+	bootInfo.m_Map = Map;
+
+	SystemTable->BootServices->ExitBootServices( ImageHandle, MapKey );
+
+	KrnlStart( &bootInfo );
 
 	return EFI_SUCCESS;
 }
