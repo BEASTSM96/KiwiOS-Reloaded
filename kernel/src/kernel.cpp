@@ -1,97 +1,30 @@
-typedef unsigned long long size_t;
+#include <stdint.h>
 
-typedef struct
+#include "BasicRenderer.h"
+#include "cstr.h"
+
+extern "C"
 {
-	void* BaseAddress;
-	size_t BufferSize;
-	unsigned int Width;
-	unsigned int Height;
-	unsigned int PixelsPerScanLine;
-} Framebuffer;
-
-typedef struct
-{
-	unsigned char Magic[ 2 ];
-	unsigned char Mode;
-	unsigned char CharSize;
-} PSF1_HEADER;
-
-typedef struct
-{
-	PSF1_HEADER* PSF1Header;
-	void* GlyphBugffer;
-
-} PSF1_FONT;
-
-typedef struct
-{
-	unsigned int X;
-	unsigned int Y;
-} POINT;
-
-void PutChar
-( 
-	Framebuffer* framebuffer, 
-	PSF1_FONT* psf1_font, 
-	unsigned int colour, 
-	char chr, 
-	unsigned int xOff, 
-	unsigned int yOff 
-)
-{
-	unsigned int* pixPtr = ( unsigned int* )framebuffer->BaseAddress;
-	char* fontPtr = psf1_font->GlyphBugffer + ( chr * psf1_font->PSF1Header->CharSize );
-	for( unsigned long y = yOff; y < yOff + 16; y++ )
+	void _start( Framebuffer* framebuffer, PSF1_FONT* psf1_font )
 	{
-		for( unsigned long x = xOff; x < xOff + 8; x++ )
-		{
-			if( ( *fontPtr & ( 0b10000000 >> ( x - xOff ) ) ) > 0 )
-			{
-				*( unsigned int* )( pixPtr + x + ( y * framebuffer->PixelsPerScanLine ) ) = colour;
-			}
+		BasicRenderer basicRenderer(framebuffer, psf1_font);
+		basicRenderer.BasicPrint( "Test C++ 123 \n\r" );
 
-		}
-		fontPtr++;
-	}
-}
+		basicRenderer.BasicPrint( to_string( ( uint64_t )1234976 ) );
+		basicRenderer.CursorPosition ={ 0, 16 };
+		basicRenderer.BasicPrint( to_string( ( int64_t )-1234976 ) );
+		basicRenderer.CursorPosition ={ 0, 32 };
+		basicRenderer.BasicPrint( to_string( ( double )-13.14 ) );
+		basicRenderer.CursorPosition ={ 0, 48 };
+		basicRenderer.BasicPrint( to_hstring( ( uint64_t )0xF0 ) );
+		basicRenderer.CursorPosition ={ 0, basicRenderer.CursorPosition.Y + 16 };
+		basicRenderer.BasicPrint( to_hstring( ( uint32_t )0xF0 ) );
+		basicRenderer.CursorPosition ={ 0, basicRenderer.CursorPosition.Y + 16 };
+		basicRenderer.BasicPrint( to_hstring( ( uint16_t )0xF0 ) );
+		basicRenderer.CursorPosition ={ 0, basicRenderer.CursorPosition.Y + 16 };
+		basicRenderer.BasicPrint( to_hstring( ( uint8_t )0xF0 ) );
 
-POINT CursorPos;
-void Print
-(
-	Framebuffer* framebuffer,
-	PSF1_FONT* psf1_font,
-	unsigned int colour,
-	char* str 
-)
-{
-	unsigned int x = 0, y = 0;
-	char* chr = str;
-	while( *chr != 0 )
-	{
-		PutChar( framebuffer, psf1_font, colour, *chr, x, 0 );
-		x += 8;
-		chr++;
+		return;
 	}
 
-}
-
-
-extern "C" void _start( Framebuffer* framebuffer, PSF1_FONT* psf1_font )
-{
-
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-	Print( framebuffer, psf1_font, 0xffffffff, "Hello World\n\r" );
-
-	return;
-}
+};
