@@ -39,3 +39,7 @@
 **.vcxproj.filters
 **.vcxproj.user
 
+kernel/bin/kernel.elf
+kernel/bin/CustomOS.img
+*.img
+kernel/bin/kernel.elf
