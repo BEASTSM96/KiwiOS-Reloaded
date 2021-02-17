@@ -34,3 +34,5 @@ private:
 	void ReservePages( void* addr, uint64_t pageCount );
 	void UnreservePages( void* addr, uint64_t pageCount );
 };
+
+extern PageFrameAllocator GlobalAllocator;
