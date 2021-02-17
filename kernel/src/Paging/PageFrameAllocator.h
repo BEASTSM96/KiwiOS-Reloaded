@@ -2,10 +2,10 @@
 
 #pragma once
 
-#include "efiMemory.h"
 #include <stdint.h>
-#include "Bitmap.h"
-#include "Memory.h"
+#include "../efiMemory.h"
+#include "../Bitmap.h"
+#include "../Memory.h"
 
 class PageFrameAllocator
 {

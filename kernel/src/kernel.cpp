@@ -5,7 +5,7 @@
 #include "efiMemory.h"
 #include "Memory.h"
 #include "Bitmap.h"
-#include "PageFrameAllocator.h"
+#include "Paging/PageFrameAllocator.h"
 
 struct BootInfo
 {
