@@ -26,3 +26,4 @@ protected:
 private:
 };
 
+extern BasicRenderer* GlobalRenderer;
