@@ -5,6 +5,7 @@ uint64_t reservedMemory;
 uint64_t usedMemory;
 bool Init = false;
 PageFrameAllocator GlobalAllocator;
+uint64_t pageBitmapIndex = 0;
 
 void PageFrameAllocator::ReadEFIMemoryMap( EFI_MEMORY_DESCRIPTOR* map, size_t MapSize, size_t MapDescSize )
 {
@@ -138,7 +139,6 @@ void PageFrameAllocator::UnreservePages( void* addr, uint64_t pageCount )
 	}
 }
 
-uint64_t pageBitmapIndex = 0;
 void* PageFrameAllocator::RequestPage()
 {
 	for( ; pageBitmapIndex < PageBitmap.Size * 8; pageBitmapIndex++ )
