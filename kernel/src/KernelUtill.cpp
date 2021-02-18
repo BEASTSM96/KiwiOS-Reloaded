@@ -52,7 +52,29 @@ void PrepInterrupts()
 	int_PageFault->type_attr = IDT_TA_InterruptGate;
 	int_PageFault->selector = 0x08;
 
+	IDTDescEntry* int_DoubleFault = ( IDTDescEntry* )( idtr.Offset + 0x8 * sizeof( IDTDescEntry ) );
+	int_DoubleFault->SetOffset( ( uint64_t )DoubleFault_handler );
+	int_DoubleFault->type_attr = IDT_TA_InterruptGate;
+	int_DoubleFault->selector = 0x08;
+
+	IDTDescEntry* int_GPFault = ( IDTDescEntry* )( idtr.Offset + 0xD * sizeof( IDTDescEntry ) );
+	int_GPFault->SetOffset( ( uint64_t )GPFault_handler );
+	int_GPFault->type_attr = IDT_TA_InterruptGate;
+	int_GPFault->selector = 0x08;
+
+	IDTDescEntry* int_KB = ( IDTDescEntry* )( idtr.Offset + 0x21 * sizeof( IDTDescEntry ) );
+	int_KB->SetOffset( ( uint64_t )Keyboard_Interrupt_handler );
+	int_KB->type_attr = IDT_TA_InterruptGate;
+	int_KB->selector = 0x08;
+
 	asm( "lidt %0" : : "m" ( idtr ) );
+
+	RemapPic();
+
+	outb( PIC1_DATA, 0b11111101 );
+	outb( PIC2_DATA, 0b11111101 );
+
+	asm( "sti" );
 }
 
 BasicRenderer r = BasicRenderer( NULL, NULL );

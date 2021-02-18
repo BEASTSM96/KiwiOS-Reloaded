@@ -5,6 +5,7 @@
 #include "Math.h"
 #include "Framebuffer.h"
 #include "SimpleFonts.h"
+#include <stdint.h>
 
 class BasicRenderer
 {
@@ -14,6 +15,9 @@ public:
 	void BasicPrint( const char* str );
 
 	void PutChar( char chr, unsigned int xOff, unsigned int yOff );
+
+	void Clear( uint32_t col );
+	void Next();
 
 public:
 	POINT CursorPosition;
