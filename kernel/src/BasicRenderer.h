@@ -15,8 +15,10 @@ public:
 	void BasicPrint( const char* str );
 
 	void PutChar( char chr, unsigned int xOff, unsigned int yOff );
+	void PutChar( char chr );
 
-	void Clear( uint32_t col );
+	void Clear();
+	void ClearChar();
 	void Next();
 
 public:
@@ -24,6 +26,7 @@ public:
 	PSF1_FONT* PSF1_Font;
 	Framebuffer* TargetFramebuffer;
 	unsigned int Colour;
+	unsigned int ClearColor;
 
 protected:
 

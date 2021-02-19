@@ -67,6 +67,11 @@ void PrepInterrupts()
 	int_KB->type_attr = IDT_TA_InterruptGate;
 	int_KB->selector = 0x08;
 
+	IDTDescEntry* int_div = ( IDTDescEntry* )( idtr.Offset + 0x0 * sizeof( IDTDescEntry ) );
+	int_div->SetOffset( ( uint64_t )DivZero_handler );
+	int_div->type_attr = IDT_TA_InterruptGate;
+	int_div->selector = 0x08;
+
 	asm( "lidt %0" : : "m" ( idtr ) );
 
 	RemapPic();
