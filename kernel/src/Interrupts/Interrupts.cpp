@@ -1,9 +1,17 @@
 #include "Interrupts.h"
 #include "../Panic.h"
+#include "../UserInput/Keyboard.h"
 
 __attribute__( ( interrupt ) ) void PageFault_handler( struct interrupt_frame* frame )
 {
 	Panic( "Page Fault Detected" );
+
+	while( true );
+}
+
+__attribute__( ( interrupt ) ) void DivZero_handler( struct interrupt_frame* frame )
+{
+	Panic( "DivZero Detected" );
 
 	while( true );
 }
@@ -24,9 +32,9 @@ __attribute__( ( interrupt ) ) void GPFault_handler( struct interrupt_frame* fra
 
 __attribute__( ( interrupt ) ) void Keyboard_Interrupt_handler( struct interrupt_frame* frame )
 {
-	GlobalRenderer->BasicPrint( "KB Pressed" );
-
 	uint8_t scancode = inb( 0x60 );
+
+	HandleKeyboard( scancode );
 
 	PIC_EndMaster();
 }
