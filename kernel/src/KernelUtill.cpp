@@ -106,5 +106,20 @@ KernelInfo InitKernel( BootInfo* bootInfo )
 
 	asm( "sti" );
 
+	ReadRTC();
+
+
+	GlobalRenderer->BasicPrint( GetMonthName() );
+	GlobalRenderer->BasicPrint( " " );
+	GlobalRenderer->BasicPrint( to_string( ( uint64_t )Time::day ) );
+	GlobalRenderer->BasicPrint( " " );
+	GlobalRenderer->BasicPrint( to_string( ( uint64_t )Time::year ) );
+	GlobalRenderer->BasicPrint( "," );
+	GlobalRenderer->BasicPrint( " " );
+	GlobalRenderer->BasicPrint( to_string( (uint64_t)Time::hour + 1 ) );
+	GlobalRenderer->BasicPrint( ":" );
+	GlobalRenderer->BasicPrint( to_string( ( uint64_t )Time::minute ) );
+	GlobalRenderer->Next();
+
 	return kernelInfo;
 }
