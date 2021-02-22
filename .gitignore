@@ -43,3 +43,4 @@ kernel/bin/kernel.elf
 kernel/bin/CustomOS.img
 *.img
 kernel/bin/kernel.elf
+kernel/KiwiLog.log
