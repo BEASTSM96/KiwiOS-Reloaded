@@ -7,7 +7,10 @@ extern "C" void _start( BootInfo* bootInfo )
 
 	GlobalRenderer->BasicPrint( "Kernel Loaded!" );
 
-	int a = 6 / 1;
+	while( true ) 
+	{
+		ProcessMousePacket();
+	}
 
 	while( true );
 }

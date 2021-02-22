@@ -21,7 +21,6 @@ public:
 	void ClearChar();
 	void Next();
 
-public:
 	POINT CursorPosition;
 	PSF1_FONT* PSF1_Font;
 	Framebuffer* TargetFramebuffer;
