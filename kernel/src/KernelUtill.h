@@ -11,6 +11,7 @@
 #include "Bitmap.h"
 #include "Paging/PageFrameAllocator.h"
 #include "Paging/PageTableManager.h"
+#include "UserInput/Mouse.h"
 
 struct BootInfo
 {

@@ -42,44 +42,43 @@ void PrepareMemory( BootInfo* bootInfo )
 }
 
 IDTR idtr;
+void SetIDTGate(void* handler, uint8_t offset, uint8_t type_attr, uint8_t selector ) 
+{
+	IDTDescEntry* interrupt = ( IDTDescEntry* )( idtr.Offset + offset * sizeof( IDTDescEntry ) );
+	interrupt->SetOffset( ( uint64_t )handler );
+	interrupt->type_attr = type_attr;
+	interrupt->selector = selector;
+}
+
 void PrepInterrupts() 
 {
 	idtr.Limit = 0x0FFF;
 	idtr.Offset = ( uint64_t )GlobalAllocator.RequestPage();
 
-	IDTDescEntry* int_PageFault = ( IDTDescEntry* )( idtr.Offset + 0xE * sizeof( IDTDescEntry ) );
-	int_PageFault->SetOffset( ( uint64_t )PageFault_handler );
-	int_PageFault->type_attr = IDT_TA_InterruptGate;
-	int_PageFault->selector = 0x08;
-
-	IDTDescEntry* int_DoubleFault = ( IDTDescEntry* )( idtr.Offset + 0x8 * sizeof( IDTDescEntry ) );
-	int_DoubleFault->SetOffset( ( uint64_t )DoubleFault_handler );
-	int_DoubleFault->type_attr = IDT_TA_InterruptGate;
-	int_DoubleFault->selector = 0x08;
-
-	IDTDescEntry* int_GPFault = ( IDTDescEntry* )( idtr.Offset + 0xD * sizeof( IDTDescEntry ) );
-	int_GPFault->SetOffset( ( uint64_t )GPFault_handler );
-	int_GPFault->type_attr = IDT_TA_InterruptGate;
-	int_GPFault->selector = 0x08;
-
-	IDTDescEntry* int_KB = ( IDTDescEntry* )( idtr.Offset + 0x21 * sizeof( IDTDescEntry ) );
-	int_KB->SetOffset( ( uint64_t )Keyboard_Interrupt_handler );
-	int_KB->type_attr = IDT_TA_InterruptGate;
-	int_KB->selector = 0x08;
-
-	IDTDescEntry* int_div = ( IDTDescEntry* )( idtr.Offset + 0x0 * sizeof( IDTDescEntry ) );
-	int_div->SetOffset( ( uint64_t )DivZero_handler );
-	int_div->type_attr = IDT_TA_InterruptGate;
-	int_div->selector = 0x08;
+	SetIDTGate( ( void* )PageFault_handler, 0xE, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )DoubleFault_handler, 0x8, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )GPFault_handler, 0xD, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Keyboard_Interrupt_handler, 0x21, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )DivZero_handler, 0x0, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Non_Maskable_Interrupt_handler, 0x2, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Breakpoint_handler, 0x3, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Overflow_handler, 0x4, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Bound_Range_Exceeded_handler, 0x5, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Invalid_Opcode_handler, 0x6, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Invalid_TSS_handler, 0xA, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Segment_Not_Present_handler, 0xB, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )StackSegment_Fault_handler, 0xC, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )x87_FloatingPoint_Exception_handler, 0x10, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Alignment_Check_handler, 0x11, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Machine_Check_handler, 0x12, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )SIMD_Floating_Point_Exception_handler, 0x13, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )Virtualization_Exception_handler, 0x14, IDT_TA_InterruptGate, 0x08 );
+	SetIDTGate( ( void* )MouseInterrupt_handler, 0x2C, IDT_TA_InterruptGate, 0x08 );
 
 	asm( "lidt %0" : : "m" ( idtr ) );
 
 	RemapPic();
 
-	outb( PIC1_DATA, 0b11111101 );
-	outb( PIC2_DATA, 0b11111101 );
-
-	asm( "sti" );
 }
 
 BasicRenderer r = BasicRenderer( NULL, NULL );
@@ -99,6 +98,13 @@ KernelInfo InitKernel( BootInfo* bootInfo )
 	memset( bootInfo->framebuffer->BaseAddress, 0, bootInfo->framebuffer->BufferSize );
 
 	PrepInterrupts();
+
+	InitPS2Mouse();
+
+	outb( PIC1_DATA, 0b11111001 );
+	outb( PIC2_DATA, 0b11101111 );
+
+	asm( "sti" );
 
 	return kernelInfo;
 }
