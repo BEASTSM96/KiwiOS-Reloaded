@@ -2,6 +2,8 @@
 
 void Panic( const char* panicMessage )
 {
+	Runtime::OnAssert( panicMessage );
+
 	GlobalRenderer->ClearColor = 0x000000FF;
 	GlobalRenderer->Clear();
 	GlobalRenderer->CursorPosition.X += 825;

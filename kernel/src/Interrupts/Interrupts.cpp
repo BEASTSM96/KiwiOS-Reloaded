@@ -202,3 +202,16 @@ void PIC_EndSalve()
 	PIC_EndMaster();
 }
 
+namespace Interupts {
+
+	void Enable()
+	{
+		asm volatile( "sti" :: : "memory" );
+	}
+
+	void Disable()
+	{
+		asm volatile( "cli" :: : "memory" );
+	}
+
+}

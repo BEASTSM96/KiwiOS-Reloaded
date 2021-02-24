@@ -13,6 +13,7 @@
 #include "Paging/PageTableManager.h"
 #include "UserInput/Mouse.h"
 #include "Time/RTC.h"
+#include "Runtime/Asserts.h"
 
 struct BootInfo
 {

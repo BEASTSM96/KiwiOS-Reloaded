@@ -17,6 +17,11 @@
 
 #define PIC_EOI 0x20
 
+namespace Interupts {
+	void Enable();
+	void Disable();
+}
+
 struct interrupt_frame;
 __attribute__( ( interrupt ) ) void PageFault_handler( interrupt_frame* frame );
 __attribute__( ( interrupt ) ) void DivZero_handler( interrupt_frame* frame );
