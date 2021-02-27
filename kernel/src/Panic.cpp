@@ -2,8 +2,6 @@
 
 void Panic( const char* panicMessage )
 {
-	Runtime::OnAssert( panicMessage );
-
 	GlobalRenderer->ClearColor = 0x000000FF;
 	GlobalRenderer->Clear();
 	GlobalRenderer->CursorPosition.X += 825;
@@ -18,4 +16,39 @@ void Panic( const char* panicMessage )
 	GlobalRenderer->CursorPosition.X += 937;
 
 	GlobalRenderer->BasicPrint( panicMessage );
+}
+
+void PanicAssert( PanicInfo panicInfo )
+{
+	Interupts::Disable();
+
+	GlobalRenderer->ClearColor = 0x000000FF;
+	GlobalRenderer->Clear();
+
+	GlobalRenderer->Colour = 0xfffff;
+	GlobalRenderer->CursorPosition.X = 0;
+	GlobalRenderer->BasicPrint( "KERNEL PANIC" );
+
+	GlobalRenderer->Next();
+
+	GlobalRenderer->BasicPrint( "DEBUG ASSERTION FAILED!" );
+
+	GlobalRenderer->Next();
+	GlobalRenderer->Next();
+
+	GlobalRenderer->BasicPrint( "Reason : " );
+	GlobalRenderer->BasicPrint( panicInfo.Reason );
+	GlobalRenderer->Next();
+
+	GlobalRenderer->BasicPrint( "File : " );
+	GlobalRenderer->BasicPrint( panicInfo.File );
+	GlobalRenderer->Next();
+
+	GlobalRenderer->BasicPrint( "Line : " );
+	GlobalRenderer->BasicPrint( to_string( ( uint64_t )panicInfo.Line ) );
+	GlobalRenderer->Next();
+
+	GlobalRenderer->BasicPrint( "Time : " );
+	GlobalRenderer->BasicPrint( panicInfo.Time );
+	GlobalRenderer->Next();
 }

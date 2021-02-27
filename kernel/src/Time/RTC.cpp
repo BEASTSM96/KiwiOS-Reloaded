@@ -7,8 +7,8 @@ namespace Time {
 	unsigned char minute = 0;
 	unsigned char hour = 0;
 	unsigned char day = 0;
-	unsigned char month = 0;
-	unsigned int year = 0;
+	unsigned char month = 1;
+	unsigned int year = 2021;
 }
 
 int GetUpdateInProg()

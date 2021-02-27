@@ -3,6 +3,5 @@
 #pragma once
 
 #include "../Panic.h"
-#include "Runtime.h"
 
-#define ASSERT(x, msg) if(!(x)) { Panic(msg); }
+#define ASSERT(x, msg, file, line, time) if(!(x)) { PanicInfo panicInfo; panicInfo.Reason = msg; panicInfo.File = file; panicInfo.Line = line; panicInfo.Time = time; PanicAssert(panicInfo); }
