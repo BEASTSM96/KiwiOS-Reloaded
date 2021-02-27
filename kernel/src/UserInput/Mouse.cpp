@@ -62,6 +62,8 @@ uint8_t mouseCycle = 0;
 uint8_t mousePacket[ 4 ];
 bool mousePacketReady = false;
 POINT MousePosition;
+POINT MousePositionOld;
+
 void HandlePS2Mouse(uint8_t data) 
 {
 
@@ -160,14 +162,16 @@ void ProcessMousePacket()
 	}
 
 	if( MousePosition.X < 0 ) MousePosition.X = 0;
-	if( MousePosition.X > GlobalRenderer->TargetFramebuffer->Width - 8 ) MousePosition.X = GlobalRenderer->TargetFramebuffer->Width - 8;
+	if( MousePosition.X > GlobalRenderer->TargetFramebuffer->Width - 1 ) MousePosition.X = GlobalRenderer->TargetFramebuffer->Width - 1;
 
 	if( MousePosition.Y < 0 ) MousePosition.Y = 0;
-	if( MousePosition.Y > GlobalRenderer->TargetFramebuffer->Height - 16 ) MousePosition.Y = GlobalRenderer->TargetFramebuffer->Height - 16;
+	if( MousePosition.Y > GlobalRenderer->TargetFramebuffer->Height - 1 ) MousePosition.Y = GlobalRenderer->TargetFramebuffer->Height - 1;
 
-	GlobalRenderer->PutChar( 'a', MousePosition.X, MousePosition.Y );
+	GlobalRenderer->ClearMouseCursor( MousePointer, MousePositionOld );
+	GlobalRenderer->DrawOverlayMouseCursor( MousePointer, MousePosition, 0xffffffff );
 
 	mousePacketReady = false;
+	MousePositionOld = MousePosition;
 }
 
 void InitPS2Mouse()

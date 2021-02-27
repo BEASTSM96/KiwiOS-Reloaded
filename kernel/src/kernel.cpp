@@ -7,7 +7,6 @@ extern "C" void _start( BootInfo* bootInfo )
 
 	GlobalRenderer->BasicPrint( "Kernel Loaded!" );
 
-	ASSERT( false, "test" );
 
 	while( true ) 
 	{
