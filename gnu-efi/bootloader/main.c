@@ -138,7 +138,7 @@ typedef struct
 	EFI_MEMORY_DESCRIPTOR* m_Map;
 	UINTN m_MapSize;
 	UINTN m_MapDescSize;
-
+	const char* magic[ 10 ];
 } BootInfo;
 
 EFI_STATUS efi_main( EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable )
@@ -249,6 +249,12 @@ EFI_STATUS efi_main( EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable )
 	bootInfo.m_MapSize = MapSize;
 	bootInfo.m_MapDescSize = DescSize;
 	bootInfo.m_Map = Map;
+
+	bootInfo.magic[ 0 ] = "M";
+	bootInfo.magic[ 1 ] = "A";
+	bootInfo.magic[ 2 ] = "G";
+	bootInfo.magic[ 3 ] = "I";
+	bootInfo.magic[ 4 ] = "C";
 
 	SystemTable->BootServices->ExitBootServices( ImageHandle, MapKey );
 

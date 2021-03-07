@@ -42,7 +42,7 @@ void PrepareMemory( BootInfo* bootInfo )
 }
 
 IDTR idtr;
-void SetIDTGate(void* handler, uint8_t offset, uint8_t type_attr, uint8_t selector ) 
+void SetIDTGate( void* handler, uint8_t offset, uint8_t type_attr, uint8_t selector )
 {
 	IDTDescEntry* interrupt = ( IDTDescEntry* )( idtr.Offset + offset * sizeof( IDTDescEntry ) );
 	interrupt->SetOffset( ( uint64_t )handler );
@@ -50,7 +50,7 @@ void SetIDTGate(void* handler, uint8_t offset, uint8_t type_attr, uint8_t select
 	interrupt->selector = selector;
 }
 
-void PrepInterrupts() 
+void PrepInterrupts()
 {
 	idtr.Limit = 0x0FFF;
 	idtr.Offset = ( uint64_t )GlobalAllocator.RequestPage();
@@ -85,6 +85,26 @@ BasicRenderer r = BasicRenderer( NULL, NULL );
 
 KernelInfo InitKernel( BootInfo* bootInfo )
 {
+
+	if( bootInfo->magic[ 0 ] == "M" && bootInfo->magic[ 1 ] == "A" && bootInfo->magic[ 2 ] == "G" && bootInfo->magic[ 3 ] == "I" && bootInfo->magic[ 4 ] == "C" )
+	{
+		bootInfo->magic[ 5 ] = " ";
+		bootInfo->magic[ 6 ] = "P";
+		bootInfo->magic[ 7 ] = "A";
+		bootInfo->magic[ 8 ] = "S";
+		bootInfo->magic[ 9 ] = "S";
+		bootInfo->magic[ 10 ] = "E";
+		bootInfo->magic[ 11 ] = "D";
+	}
+	else if( bootInfo->magic[ 0 ] != "M" || bootInfo->magic[ 1 ] != "A" || bootInfo->magic[ 2 ] != "G" || bootInfo->magic[ 3 ] != "I" || bootInfo->magic[ 4 ] != "C" )
+	{
+		r = BasicRenderer( bootInfo->framebuffer, bootInfo->PSF1_Font );
+		GlobalRenderer = &r;
+
+		GlobalRenderer->BasicPrint( "Magic failed" );
+		while( true );
+	}
+
 	r = BasicRenderer( bootInfo->framebuffer, bootInfo->PSF1_Font );
 	GlobalRenderer = &r;
 
@@ -101,24 +121,14 @@ KernelInfo InitKernel( BootInfo* bootInfo )
 
 	InitPS2Mouse();
 
+	ReadRTC();
+
 	outb( PIC1_DATA, 0b11111001 );
 	outb( PIC2_DATA, 0b11101111 );
 
-	asm( "sti" );
+	asm volatile( "sti" );
 
-	ReadRTC();
-
-
-	GlobalRenderer->BasicPrint( GetMonthName() );
-	GlobalRenderer->BasicPrint( " " );
-	GlobalRenderer->BasicPrint( to_string( ( uint64_t )Time::day ) );
-	GlobalRenderer->BasicPrint( " " );
-	GlobalRenderer->BasicPrint( to_string( ( uint64_t )Time::year ) );
-	GlobalRenderer->BasicPrint( "," );
-	GlobalRenderer->BasicPrint( " " );
-	GlobalRenderer->BasicPrint( to_string( (uint64_t)Time::hour + 1 ) );
-	GlobalRenderer->BasicPrint( ":" );
-	GlobalRenderer->BasicPrint( to_string( ( uint64_t )Time::minute ) );
+	GlobalRenderer->BasicPrint( "MAGIC PASSED" );
 	GlobalRenderer->Next();
 
 	return kernelInfo;

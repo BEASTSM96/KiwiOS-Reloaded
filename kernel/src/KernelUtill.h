@@ -22,6 +22,7 @@ struct BootInfo
 	EFI_MEMORY_DESCRIPTOR* m_Map;
 	uint64_t m_MapSize;
 	uint64_t m_MapDescSize;
+	const char* magic[10];
 };
 
 
