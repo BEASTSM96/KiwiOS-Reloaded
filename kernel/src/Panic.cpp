@@ -18,6 +18,9 @@ void Panic( const char* panicMessage )
 	GlobalRenderer->BasicPrint( panicMessage );
 }
 
+/*
+* Does not have a while(true)
+*/
 void PanicAssert( PanicInfo panicInfo )
 {
 	Interupts::Disable();

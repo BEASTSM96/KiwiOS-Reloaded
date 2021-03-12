@@ -85,6 +85,7 @@ BasicRenderer r = BasicRenderer( NULL, NULL );
 
 KernelInfo InitKernel( BootInfo* bootInfo )
 {
+	bool allSafe = true;
 
 	if( bootInfo->magic[ 0 ] == "M" && bootInfo->magic[ 1 ] == "A" && bootInfo->magic[ 2 ] == "G" && bootInfo->magic[ 3 ] == "I" && bootInfo->magic[ 4 ] == "C" )
 	{
@@ -95,14 +96,6 @@ KernelInfo InitKernel( BootInfo* bootInfo )
 		bootInfo->magic[ 9 ] = "S";
 		bootInfo->magic[ 10 ] = "E";
 		bootInfo->magic[ 11 ] = "D";
-	}
-	else if( bootInfo->magic[ 0 ] != "M" || bootInfo->magic[ 1 ] != "A" || bootInfo->magic[ 2 ] != "G" || bootInfo->magic[ 3 ] != "I" || bootInfo->magic[ 4 ] != "C" )
-	{
-		r = BasicRenderer( bootInfo->framebuffer, bootInfo->PSF1_Font );
-		GlobalRenderer = &r;
-
-		GlobalRenderer->BasicPrint( "Magic failed" );
-		while( true );
 	}
 
 	r = BasicRenderer( bootInfo->framebuffer, bootInfo->PSF1_Font );
@@ -119,9 +112,9 @@ KernelInfo InitKernel( BootInfo* bootInfo )
 
 	PrepInterrupts();
 
-	InitPS2Mouse();
-
 	ReadRTC();
+
+	InitPS2Mouse();
 
 	outb( PIC1_DATA, 0b11111001 );
 	outb( PIC2_DATA, 0b11101111 );
