@@ -7,7 +7,6 @@ extern "C" void _start( BootInfo* bootInfo )
 
 	GlobalRenderer->BasicPrint( "Kernel Loaded!" );
 
-
 	while( true ) 
 	{
 		ProcessMousePacket();

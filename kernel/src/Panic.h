@@ -8,11 +8,11 @@
 
 struct PanicInfo 
 {
-	int Line;
+	int         Line;
 	const char* Time;
 	const char* File;
 	const char* Reason;
 };
 
-void Panic( const char* panicMessage );
-void PanicAssert( PanicInfo panicInfo );
+void Panic       ( const char* panicMessage );
+void PanicAssert ( PanicInfo panicInfo );
